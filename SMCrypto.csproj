@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net6.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <PackageVersion>1.0.1</PackageVersion>
+        <Title>SMCrypto</Title>
+        <Description>国密算法sm2、sm3移植自https://github.com/JuneAndGreen/sm-crypto#readme</Description>
+    </PropertyGroup>
+
+</Project>
