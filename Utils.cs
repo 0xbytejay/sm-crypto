@@ -2,6 +2,13 @@ namespace SMCrypto;
 
 public static class SMExtensions
 {
+    public static string PadLeftZero(this string str,int num)
+    {
+        return str.PadLeft(num, '0');
+    }
+
+    
+    
     public static   IEnumerable<T> Slice<T>(this IEnumerable<T> l,int start,int end)
     {
         return l.Skip(start).Take(end-start);
@@ -59,7 +66,7 @@ public class SMUtils
     /**
  * 获取公共椭圆曲线
  */
-    public static ECCurveFp getGlobalCurve()
+    public static Tuple<ECCurveFp,ECPointFp,BigInteger> getGlobalCurve()
     {
         BigInteger p = new BigInteger("FFFFFFFEFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00000000FFFFFFFFFFFFFFFF", 16);
         BigInteger a = new BigInteger("FFFFFFFEFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00000000FFFFFFFFFFFFFFFC", 16);
@@ -69,7 +76,7 @@ public class SMUtils
         string gyHex = "BC3736A2F4F6779C59BDCEE36B692153D0A9877CC62A474002DF32E52139F0A0";
         dynamic G = curve.decodePointHex("04" + gxHex + gyHex);
         BigInteger n = new BigInteger("FFFFFFFEFFFFFFFFFFFFFFFFFFFFFFFF7203DF6B21C6052B53BBF40939D54123", 16);
-        return curve;
+        return new Tuple<ECCurveFp, ECPointFp, BigInteger>(curve,G,n);
     }
 
     /**
@@ -85,7 +92,7 @@ public class ECPointFp
     public BigInteger z;
     public dynamic? zinv;
 
-    public ECPointFp(ECCurveFp ecCurveFp,ECFieldElementFp? x,ECFieldElementFp? y,BigInteger? z)
+    public ECPointFp(ECCurveFp ecCurveFp,ECFieldElementFp? x,ECFieldElementFp? y,BigInteger? z=null)
     {
         
         this.curve = ecCurveFp;
@@ -135,7 +142,7 @@ public class ECPointFp
    public bool isInfinity()
     {
         if ((this.x == null) && (this.y == null)) return true;
-        return this.z.Equals(BigInteger.Zero) && !this.y.Equals(BigInteger.Zero);
+        return this.z.Equals(BigInteger.Zero) && !this.y.toBigInteger().Equals(BigInteger.Zero);
     }
     
     /**
@@ -236,9 +243,9 @@ public class ECPointFp
         BigInteger y1 = this.y.toBigInteger();
         BigInteger z1 = this.z;
         BigInteger q = this.curve.q;
-        ECFieldElementFp a = this.curve.a;
+        BigInteger a = this.curve.a.toBigInteger();
 
-        BigInteger w1 = x1.Square().Multiply(BigInteger.Three).Add(a.multiply(z1.Square()).toBigInteger()).Mod(q);
+        BigInteger w1 = x1.Square().Multiply(BigInteger.Three).Add(a.Multiply(z1.Square())).Mod(q);
         BigInteger w2 = y1.ShiftLeft(1).Multiply(z1).Mod(q);
         BigInteger w3 = y1.Square().Mod(q);
         BigInteger w4 = w3.Multiply(x1).Multiply(z1).Mod(q);
@@ -328,25 +335,25 @@ public class ECFieldElementFp
     /**
    * 相加
    */
-    public ECFieldElementFp add(BigInteger b)
+    public ECFieldElementFp add(ECFieldElementFp b)
     {
-        return new ECFieldElementFp(this.q, this.x.Add(b).Mod(this.q));
+        return new ECFieldElementFp(this.q, this.x.Add(b.toBigInteger()).Mod(this.q));
     }
     
     /**
    * 相乘
    */
-    public ECFieldElementFp multiply(BigInteger b)
+    public ECFieldElementFp multiply(ECFieldElementFp b)
     {
-        return new ECFieldElementFp(this.q, this.x.Multiply(b).Mod(this.q));
+        return new ECFieldElementFp(this.q, this.x.Multiply(b.toBigInteger()).Mod(this.q));
     }
     
     /**
    * 相除
    */
-    public ECFieldElementFp divide(BigInteger b)
+    public ECFieldElementFp divide(ECFieldElementFp b)
     {
-        return new ECFieldElementFp(this.q, this.x.Multiply(b.ModInverse(this.q)).Mod(this.q));
+        return new ECFieldElementFp(this.q, this.x.Multiply(b.toBigInteger().ModInverse(this.q)).Mod(this.q));
     }
 
     /**
@@ -369,7 +376,7 @@ public class ECCurveFp
         this.q = q;
         this.a = this.fromBigInteger(a);
         this.b = this.fromBigInteger(b);
-        this.infinity = new ECPointFp(this, null, null, null); // 无穷远点
+        this.infinity = new ECPointFp(this, null, null); // 无穷远点
     }
     
     /**
@@ -400,7 +407,7 @@ public class ECCurveFp
                 string yHex = s.Substring(len + 2, len);
 
                 return new ECPointFp(this, this.fromBigInteger(new BigInteger(xHex, 16)),
-                    this.fromBigInteger(new BigInteger(yHex, 16)),null);
+                    this.fromBigInteger(new BigInteger(yHex, 16)));
             default:
                 // 不支持
                 return null;

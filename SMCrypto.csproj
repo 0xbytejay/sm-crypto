@@ -8,6 +8,9 @@
         <PackageVersion>1.0.1</PackageVersion>
         <Title>SMCrypto</Title>
         <Description>国密算法sm2、sm3移植自https://github.com/JuneAndGreen/sm-crypto#readme</Description>
+        <PackageProjectUrl>https://github.com/Mole365/sm-crypto</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/Mole365/sm-crypto</RepositoryUrl>
+        <RepositoryType></RepositoryType>
     </PropertyGroup>
 
 </Project>

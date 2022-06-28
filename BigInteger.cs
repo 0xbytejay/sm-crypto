@@ -755,6 +755,28 @@ public class BigInteger
     }
 
     
+    public BigInteger(int sizeInBits, Random random)
+    {
+      if (sizeInBits < 0)
+        throw new ArgumentException("sizeInBits must be non-negative");
+      this.nBits = -1;
+      this.nBitLength = -1;
+      if (sizeInBits == 0)
+      {
+        this.sign = 0;
+        this.magnitude = BigInteger.ZeroMagnitude;
+      }
+      else
+      {
+        int byteLength = BigInteger.GetByteLength(sizeInBits);
+        byte[] numArray = new byte[byteLength];
+        random.NextBytes(numArray);
+        int num = 8 * byteLength - sizeInBits;
+        numArray[0] &= (byte) ((uint) byte.MaxValue >> num);
+        this.magnitude = BigInteger.MakeMagnitude(numArray, 0, numArray.Length);
+        this.sign = this.magnitude.Length < 1 ? 0 : 1;
+      }
+    }
 
     public static int BitCnt(int i)
     {
