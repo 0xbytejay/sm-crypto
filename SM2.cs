@@ -93,6 +93,9 @@ public class SM2
      // c3 = hash(x2 || msg || y2)
      string c3 = SMUtils.arrayToHex(SM3.SM3Array(x2.Concat(msgBytes).Concat(y2).ToArray()));
 
+     
+     
+     
      int ct = 1;
      int offset = 0;
      byte[] t = new byte[0]; // 256 位
@@ -116,14 +119,9 @@ public class SM2
 
      string c2 = SMUtils.arrayToHex(msgBytes);
      
-     if (cipherMode == CipherMode.C1C2C3)
-     {
-         return c1 + c2 + c3;
-     }
-     else
-     {
-         return c1 + c3 + c2;
-     }
+     
+     return (cipherMode == CipherMode.C1C2C3 ? c1 + c2 + c3 : c1 + c3 + c2).ToLower();
+     
  }
  
  public static SM2Res DoDecrypt(string encryptData,string  privateKey,CipherMode cipherMode=CipherMode.C1C3C2)
