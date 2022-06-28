@@ -7,7 +7,7 @@ https://github.com/Mole365/sm-crypto
 https://www.nuget.org/packages/SMCrypto
 # 安装
 ```
-dotnet add package SMCrypto --version 1.0.2
+dotnet add package SMCrypto --version 1.0.3
 ```
 # 使用
 
